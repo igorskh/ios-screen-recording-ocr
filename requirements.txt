@@ -1,0 +1,7 @@
+numpy>=1.16.*
+pandas>=0.24.*
+opencv-python>=4.1.*
+imutils>=0.5.*
+python-dateutil>=2.7.*
+pytesseract>=0.2.*
+scikit-image>=0.14.*

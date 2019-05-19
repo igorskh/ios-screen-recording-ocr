@@ -33,7 +33,32 @@ A frame sample:
 * [scikit-image](https://scikit-image.org)
 
 ## Usage
-TODO: Usage description
+Usage example, the resulting table will be saved to `build/data/video.csv` file and video frames to `build/data/video` folder. Where `i` is the path to the video file.
+```bash
+python3 test.py -i=build/data/video.mp4
+# or specifying number of CPU cores to use for multithreading
+python3 test.py -i=build/data/video.mp4 --n-proc=10
+```
+
+You can run only frames extraction:
+```
+python3 test.py -i=build/data/video.mp4 --skip-extracting
+```
+
+Likewise, if frames already extraced, one can skip that step:
+```
+python3 test.py -i=build/data/video.mp4 --skip-parsing
+```
+
+## Development
+Setup [virtual environment](https://packaging.python.org/guides/installing-using-pip-and-virtual-environments/)
+
+In the repository folder run the following commands:
+```
+virtualenv --no-site-packages venv
+source venv/bin/activate
+pip3 install -r requirements.txt
+```
 
 ## Project structure
 The main script is located in `cli.py` file. Us `python3 cli.py -h` to explore all possible options.

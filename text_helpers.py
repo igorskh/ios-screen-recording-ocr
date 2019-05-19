@@ -86,5 +86,8 @@ def check_replace(val, replace_rules):
             if replace_to_[1] is None:
                 val = val.replace(replace_from, replace_to_[0])
                 continue
-            val = val[:replace_to_[1]] + val[replace_to_[1]:].replace(replace_from, replace_to_[0])
+            if replace_to_[1] < 0:
+                val = val[:replace_to_[1]] + val[replace_to_[1]].replace(replace_from, replace_to_[0])
+            else:
+                val = val[replace_to_[1]].replace(replace_from, replace_to_[0]) + val[replace_to_[1]+1:]
     return val

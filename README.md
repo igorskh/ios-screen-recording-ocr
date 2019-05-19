@@ -39,6 +39,7 @@ As a result I want to get a CSV file with a time trace of a received signal stre
 * [dateutil](https://pypi.org/project/python-dateutil/)
 * [scikit-image](https://scikit-image.org)
 
+## Installation and Usage
 All dependencies are in the `requirements.txt` and can be installed using `pip`, also in the virtual environment:
 ```bash
 pip3 install -r requirements.txt
@@ -48,7 +49,6 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-## Installation and Usage
 Usage example, the resulting CSV file will be saved to `sample/video.csv` and video frames images to `sample/video` folder. Where `i` is the path to the video file.
 ```bash
 python3 test.py -i=sample/video.mp4

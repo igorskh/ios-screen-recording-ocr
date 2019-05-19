@@ -1,7 +1,7 @@
 # iOS Field Test Mode OCR Parser using OpenCV and Tesseract
 
 ## Description
-This project is an example of text detection and text recognition using OpenCV and Google Tesseract using corresponding Python libraries to extract field test mode measurements from iOS using screen recording and post-processing.
+This project is an implementation of text detection and text recognition using [OpenCV](https://opencv.org) and [Google Tesseract](https://opensource.google.com/projects/tesseract) with corresponding Python wrappers to extract field test mode measurements from iOS obtained by built-in screen recording and post-processing.
 
 This project serves solely learning purpose to practice text detection and optical character recognition (OCR).
 
@@ -17,8 +17,10 @@ A frame sample:
 
 ![Frame example](screenshots/frame0.png)
 
+The areas of interests are labels on the left-hand side and values on the right-hand side and how the latter are changing over time. That what we will detect and recognize.
+
 ## Outcome
-As a result I want to get a CSV file with a time trace of a received signal strength.
+As a result I want to get a CSV file with a time trace of a received signal strength. All values are converted to the corresponding format (Integer, Float, Date and time) and validated, such as a valid range.
 
 ![Frame example](screenshots/table.png)
 

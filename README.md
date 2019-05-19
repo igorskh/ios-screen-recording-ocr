@@ -5,15 +5,10 @@ This project is an example of text detection and text recognition using OpenCV a
 
 This project serves solely learning purpose to practice text detection and optical character recognition (OCR).
 
-There are of course many things can be improved, feel free to experiment, discuss or pull request.
+There are of course many things that can be improved, feel free to experiment, discuss or pull request.
 
 ## Background
 Field Test Mode on the iPhones provides infromation about radio channel conditions, such as received power levels or signal-to-noise ratios, as well as information to which base station the phone is currently connected. However, unlike Android, the iOS does not provide any API to access this data.
-
-## Outcome
-As a result I want to get a CSV file with a time trace of a received signal strength.
-
-![Frame example](screenshots/table.png)
 
 ## Input description
 Input for the processing is a video file which as then transformed to the unique image sequence. Since the frame rate is higher than 1 frame per second and the data changes even less frequently we need to extract only frames with new information on them.
@@ -21,6 +16,11 @@ Input for the processing is a video file which as then transformed to the unique
 A frame sample:
 
 ![Frame example](screenshots/frame0.png)
+
+## Outcome
+As a result I want to get a CSV file with a time trace of a received signal strength.
+
+![Frame example](screenshots/table.png)
 
 ## Dependencies
 * Python 3
@@ -31,6 +31,8 @@ A frame sample:
 * [imutils](https://pypi.org/project/imutils/)
 * [dateutil](https://pypi.org/project/python-dateutil/)
 * [scikit-image](https://scikit-image.org)
+
+All dependencies are in the `requirements.txt` and can be installed using `pip`, also in the virtual environment.
 
 ## Usage
 Usage example, the resulting table will be saved to `build/data/video.csv` file and video frames to `build/data/video` folder. Where `i` is the path to the video file.

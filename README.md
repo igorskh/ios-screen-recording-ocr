@@ -51,19 +51,19 @@ pip install -r requirements.txt
 
 Usage example, the resulting CSV file will be saved to `sample/video.csv` and video frames images to `sample/video` folder. Where `i` is the path to the video file.
 ```bash
-python3 test.py -i=sample/video.mp4
+python3 cli_video.py -i=sample/video.mp4
 # or specifying number of CPU cores to use for multithreading
-python3 test.py -i=sample/video.mp4 --n-proc=10
+python3 cli_video.py -i=sample/video.mp4 --n-proc=10
 ```
 
 You can run only frames extraction:
 ```
-python3 test.py -i=sample/video.mp4 --skip-extracting
+python3 cli_video.py -i=sample/video.mp4 --skip-extracting
 ```
 
 Likewise, if frames already extraced, one can skip that step:
 ```
-python3 test.py -i=sample/video.mp4 --skip-parsing
+python3 cli_video.py -i=sample/video.mp4 --skip-parsing
 ```
 
 ## Project structure

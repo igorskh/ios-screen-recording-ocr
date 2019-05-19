@@ -6,13 +6,14 @@ __status__ = "Development"
 __date__ = "05/2019"
 __license__ = "MIT"
 
-import cv2, pytesseract, imutils
+import cv2, pytesseract, imutils, logging
 import numpy as np
 
 from skimage.measure import compare_ssim as ssim
 
 from consts import *
 
+logger = logging.getLogger('')
 def sort_contours(cnts, method="left-to-right"):
     """
     Source https://www.pyimagesearch.com/2015/04/20/sorting-contours-using-python-and-opencv/
@@ -145,15 +146,15 @@ def recognise_rois(rois, padding=0, scaling_factor=1, debug=False):
         image = preprocess_roi(r, padding, scaling_factor)
         text = pytesseract.image_to_string(image, config=TESSERACT_CONF)
         if triggered:
+            logger.debug("ROI {}: {}".format(i, text))
             if debug:
-                print("ROI {}: {}".format(i, text))
                 cv2.imwrite("%s/%d.png"%(DEBUG_FOLDER,i), image)
             values.append((text, pos))
             if len(values) == len(EXPECTED_KEYS)*2:
                 break
         triggered = triggered or str(text).lower().find(TRIGGER_WORD) > -1
     if not triggered:
-        print("Trigger not found")
+        logger.warning("Trigger not found")
     return values
 
 def get_video_n_frames(filename):
@@ -206,7 +207,7 @@ def get_video_frames(filename, output="images", frames=None, middle_frame=None, 
             if simple_read:
                 break
             else: 
-                print("Failed reading frame %d"%f)
+                logger.warning("Failed reading frame %d"%f)
                 continue
         if middle_frame is not None and ssim(middle_frame, image, multichannel=True) < middle_tolerance:
             continue

@@ -6,10 +6,11 @@ __status__ = "Development"
 __date__ = "05/2019"
 __license__ = "MIT"
 
-import cv2
+import cv2, logging
 
 import consts, cv_helpers, text_helpers
 
+logger = logging.getLogger('')
 def detect_keys(res, expected_keys=consts.EXPECTED_KEYS):
     if len(res) != len(expected_keys):
         return None
@@ -41,10 +42,10 @@ def detect_values(res, keys, result, expected_keys=consts.EXPECTED_KEYS):
         try:
             val = expected_keys[keys[i]]["map"](res[i])
         except ValueError:
-            print("Could not map value %s to %s"%(res[i], keys[i]))
+            logger.warning("Could not map value %s to %s"%(res[i], keys[i]))
             has_none = True
         if "range" in expected_keys[keys[i]] and  not has_none and not text_helpers.is_val_in_range(val, expected_keys[keys[i]]["range"]):
-            print("Value %s of type %s is out of range"%(res[i], keys[i]))
+            logger.warning("Value %s of type %s is out of range"%(res[i], keys[i]))
             val = None
             has_none = True
         if result[keys[i]] is None:
@@ -85,23 +86,22 @@ def process_one_image(input_path, output_path=None, padding=0, scaling_factor=1,
                 potential_values.append(r)
 
         if len(res)%2 != 0:
-            print("Cannot process - odd number of values [%s] scaling factor [%d]"%(input_path, s))
+            logger.warning("Cannot process - odd number of values [%s] scaling factor [%d]"%(input_path, s))
             continue
         keys = detect_keys(potential_keys)
         if keys is None or len(keys) != len(consts.EXPECTED_KEYS):
-            print("Keys not found [%s] scaling factor [%d]"%(input_path, s))
+            logger.warning("Keys not found [%s] scaling factor [%d]"%(input_path, s))
             continue
         values, has_none = detect_values(potential_values, keys, result, consts.EXPECTED_KEYS)
         if values is None:
-            print("Values not found [%s] scaling factor [%d]"%(input_path, s))
+            logger.warning("Values not found [%s] scaling factor [%d]"%(input_path, s))
             continue
         if has_none:
-            print("Some values are None [%s] scaling factor [%d]"%(input_path, s))
+            logger.warning("Some values are None [%s] scaling factor [%d]"%(input_path, s))
             continue
         break
-        if debug:
-            print(keys)
-            print(values)
+    logger.debug(keys)
+    logger.debug(values)
     
     has_none = False
     has_value = False

@@ -7,7 +7,7 @@ __status__ = "Development"
 __date__ = "05/2019"
 __license__ = "MIT"
 
-import os, sys, argparse, time, math
+import os, sys, argparse, time, math, logging
 import pandas as pd
 import multiprocessing as mp
 
@@ -31,7 +31,7 @@ def extract_frames(input_path, output_folder, n_proc):
     if fps == 0:
         fps = 1
         n_proc = 1
-        print("Could not detect video FPS, fallback to 1 thread")
+        logger.warning("Could not detect video FPS, fallback to 1 thread")
         n_jobs = n_frames
         procs = [mp.Process(target=cv_helpers.get_video_frames, 
             args=(input_path, output_folder, None, None)) for i in range(n_proc)]
@@ -50,10 +50,10 @@ def extract_frames(input_path, output_folder, n_proc):
     start = time.time()
     for p in procs:
         p.start()
-    print("Extracting %d frames in %d thread(s)"%(n_jobs, n_proc))
+    logger.info("Extracting %d frames in %d thread(s)"%(n_jobs, n_proc))
     for p in procs:
         p.join()
-    print("Extracted %d in %.2f s"%(n_jobs, time.time() - start))
+    logger.info("Extracted %d in %.2f s"%(n_jobs, time.time() - start))
 
 def parse_folder(folder, output_csv, n_proc, scaling_factor):
     data = {}
@@ -61,7 +61,7 @@ def parse_folder(folder, output_csv, n_proc, scaling_factor):
         data[k] = []
     data["file"] = []
 
-    print("Parsing folder %s"%folder)
+    logger.info("Parsing folder %s"%folder)
     frames_fn = []
     for f in os.listdir(folder):
         if f.endswith(".png"):
@@ -80,13 +80,13 @@ def parse_folder(folder, output_csv, n_proc, scaling_factor):
     for p in procs:
         p.start()
 
-    print("Starting jobs in %d thread(s)"%n_proc)
+    logger.info("Starting text recognition in %d thread(s)"%n_proc)
     for p in procs:
         p.join()
 
     while not q.empty():
         append_result(q.get(), data)
-    print("Parsed %d in %.2f s"%(n_jobs, time.time() - start))
+    logger.info("Processed %d frames in %.2f s"%(n_jobs, time.time() - start))
 
     df = pd.DataFrame(data=data)
     df = df.groupby("timestamp").first().sort_values(by=["timestamp"]).reset_index()
@@ -98,10 +98,41 @@ ap.add_argument("-n", "--n-proc", type=int, default=4, help="Number of cores for
 ap.add_argument("-e", "--skip-extracting", action='store_true', help="Skip extracting images")
 ap.add_argument("-p", "--skip-parsing", action='store_true', help="Skip parsing images")
 ap.add_argument("-s", "--scaling-factors", type=str, default="5,4,3,2", help="Scaling factor to resize for Tesseract")
+ap.add_argument("-d", "--debug-level", type=str, default="info", help="Debug level")
+ap.add_argument("-f", "--debug-file", type=str, default="", help="Output logs to file")
+ap.add_argument("-o", "--silent", action='store_true', help="Do not output logs to STDOUT")
 args = vars(ap.parse_args())
 
-if not os.path.exists(args["input"]):
-    print("File or folder %s not found"%args["input"])
+debug_level = logging.WARNING
+new_debug_level = "warning" if args["debug_level"] is None else str(args["debug_level"]).lower()
+if new_debug_level.startswith("deb"):
+    debug_level = logging.DEBUG
+elif new_debug_level.startswith("inf"):
+    debug_level = logging.INFO
+elif new_debug_level.startswith("warn"):
+    debug_level = logging.WARNING
+elif new_debug_level.startswith("err"):
+    debug_level = logging.ERROR
+elif new_debug_level.startswith("crit"):
+    debug_level = logging.CRITICAL
+
+handlers = []
+if not args["silent"]:
+    handlers.append(logging.StreamHandler())
+if args["debug_file"] and len(args["debug_file"]) > 0:
+    if not os.path.exists(args["debug_file"]):
+        os.makedirs(args["debug_file"])
+    handlers.append(logging.FileHandler(args["debug_file"]))
+    
+logging.basicConfig(
+    level=debug_level,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    datefmt="%Y-%m-%d %H:%M:%S",
+    handlers=handlers)
+
+logger = logging.getLogger('')
+if not os.path.exists(args["input"]) or not os.path.isfile(args["input"]):
+    logger.critical("File %s not found, exiting"%args["input"])
     sys.exit()
 
 scaling_factors = list(map(int, args["scaling_factors"].split(",")))

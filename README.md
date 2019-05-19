@@ -15,9 +15,11 @@ Field Test Mode on the iPhones provides infromation about radio channel conditio
 ## Input description
 Input for the processing is a video file which as then transformed to the unique image sequence. Since the frame rate is higher than 1 frame per second and the data changes even less frequently we need to extract only frames with new information on them.
 
-A frame sample:
+A frame sample and processing example
 
 ![Frame example](screenshots/frame0.png)
+![Contours preprocessing](screenshots/preprocessing.png) 
+![Contours result](screenshots/contours.png) 
 
 The areas of interests are labels on the left-hand side and values on the right-hand side and how the latter are changing over time. That what we will detect and recognize.
 

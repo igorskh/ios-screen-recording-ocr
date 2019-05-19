@@ -7,7 +7,7 @@ __status__ = "Development"
 __date__ = "05/2019"
 __license__ = "MIT"
 
-import os, sys, argparse, time, math
+import os, sys, argparse, time, math, logging
 import pandas as pd
 import multiprocessing as mp
 
@@ -35,13 +35,21 @@ ap.add_argument("-s", "--scaling-factor", type=str, default="1", help="Scaling f
 ap.add_argument("-t", "--video-tolerance", type=float, default=.98, help="Tolerance for video import")
 args = vars(ap.parse_args())
 
+handlers = [logging.StreamHandler()]
+logging.basicConfig(
+    level=logging.DEBUG if args["debug"] else logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    datefmt="%Y-%m-%d %H:%M:%S",
+    handlers=handlers)
+logger = logging.getLogger('')
+
 args["scaling_factor"] = list(map(int, args["scaling_factor"].split(",")))
 for f in consts.FOLDERS:
     if not os.path.exists("build"):
         os.makedirs("build")
 
 if not os.path.exists(args["input"]):
-    print("File or folder %s not found"%args["input"])
+    logger.critical("File or folder %s not found"%args["input"])
     sys.exit()
 
 if args["video"]:
@@ -55,7 +63,7 @@ if args["video"]:
     if fps == 0:
         fps = 1
         n_proc = 1
-        print("Could not detect video FPS, fallback to 1 thread")
+        logger.warning("Could not detect video FPS, fallback to 1 thread")
         n_jobs = n_frames
         procs = [mp.Process(target=cv_helpers.get_video_frames, 
             args=(args["input"], args["output"], None, None, tolerance)) for i in range(n_proc)]
@@ -74,10 +82,10 @@ if args["video"]:
     start = time.time()
     for p in procs:
         p.start()
-    print("Extracting %d frames in %d thread(s)"%(n_jobs, n_proc))
+    logger.info("Extracting %d frames in %d thread(s)"%(n_jobs, n_proc))
     for p in procs:
         p.join()
-    print("Extracted %d in %.2f s"%(n_jobs, time.time() - start))
+    logger.info("Extracted %d in %.2f s"%(n_jobs, time.time() - start))
     sys.exit()
 
 data = {}
@@ -85,13 +93,13 @@ for k in consts.EXPECTED_KEYS:
     data[k] = []
 data["file"] = []
 if os.path.isfile(args["input"]):
-    print("Parsing file %s"%args["input"])
+    logger.info("Parsing file %s"%args["input"])
     has_value, has_none, res = recognizer.process_one_image(args["input"], args["output"], 
         args["padding"], args["scaling_factor"], debug=args["debug"])
     append_result(res, data)
 else:
     folder = args["input"]
-    print("Parsing folder %s"%folder)
+    logger.info("Parsing folder %s"%folder)
 
     frames_fn = []
     idx = 0
@@ -116,13 +124,13 @@ else:
     for p in procs:
         p.start()
 
-    print("Starting jobs in %d thread(s)"%n_proc)
+    logger.info("Starting jobs in %d thread(s)"%n_proc)
     for p in procs:
         p.join()
 
     while not q.empty():
         append_result(q.get(), data)
-    print("Parsed %d in %.2f s"%(n_jobs, time.time() - start))
+    logger.info("Parsed %d in %.2f s"%(n_jobs, time.time() - start))
 
 df = pd.DataFrame(data=data)
 df = df.groupby("timestamp").first().sort_values(by=["timestamp"]).reset_index()

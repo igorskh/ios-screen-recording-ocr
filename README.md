@@ -39,34 +39,31 @@ As a result I want to get a CSV file with a time trace of a received signal stre
 * [dateutil](https://pypi.org/project/python-dateutil/)
 * [scikit-image](https://scikit-image.org)
 
-All dependencies are in the `requirements.txt` and can be installed using `pip`, also in the virtual environment.
-
-## Usage
-Usage example, the resulting table will be saved to `build/data/video.csv` file and video frames to `build/data/video` folder. Where `i` is the path to the video file.
+All dependencies are in the `requirements.txt` and can be installed using `pip`, also in the virtual environment:
 ```bash
-python3 test.py -i=build/data/video.mp4
+pip3 install -r requirements.txt
+# or with virtual environment
+virtualenv --no-site-packages venv
+source venv/bin/activate
+pip install -r requirements.txt
+```
+
+## Installation and Usage
+Usage example, the resulting CSV file will be saved to `sample/video.csv` and video frames images to `sample/video` folder. Where `i` is the path to the video file.
+```bash
+python3 test.py -i=sample/video.mp4
 # or specifying number of CPU cores to use for multithreading
-python3 test.py -i=build/data/video.mp4 --n-proc=10
+python3 test.py -i=sample/video.mp4 --n-proc=10
 ```
 
 You can run only frames extraction:
 ```
-python3 test.py -i=build/data/video.mp4 --skip-extracting
+python3 test.py -i=sample/video.mp4 --skip-extracting
 ```
 
 Likewise, if frames already extraced, one can skip that step:
 ```
-python3 test.py -i=build/data/video.mp4 --skip-parsing
-```
-
-## Development
-Setup [virtual environment](https://packaging.python.org/guides/installing-using-pip-and-virtual-environments/)
-
-In the repository folder run the following commands:
-```
-virtualenv --no-site-packages venv
-source venv/bin/activate
-pip3 install -r requirements.txt
+python3 test.py -i=sample/video.mp4 --skip-parsing
 ```
 
 ## Project structure

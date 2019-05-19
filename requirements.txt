@@ -1,7 +1,7 @@
-numpy>=1.16.*
-pandas>=0.24.*
-opencv-python>=4.1.*
-imutils>=0.5.*
-python-dateutil>=2.7.*
-pytesseract>=0.2.*
-scikit-image>=0.14.*
+numpy==1.16.3
+pandas==0.24.1
+opencv-python==4.1.0.25
+imutils==0.5.2
+python-dateutil==2.7.3
+pytesseract==0.2.6
+scikit-image==0.14.2

@@ -78,7 +78,7 @@ The script file `consts.py` contains constants, such as types, folder names.
 `cv_helper.py` is a set of methods related to OpenCV, e.g. to extract video frames or pre-process images.
 
 ## Constants explanation
-
+The script file `consts.py` contains types constants:
 ```python
 CHECK_NONE = 0
 CHECK_REPLACE = 1
@@ -142,13 +142,26 @@ However, I have later realised that using this libraries for this case is too ov
 ![Contours preprocessing](screenshots/preprocessing.png) 
 ![Contours result](screenshots/contours.png) 
 
-Pre-processing of the original image affects the result a lot, but preparing image for contour detection is much easier task than for text detection:
+Pre-processing of the original image affects the result a lot, but preparing image for contour detection is much easier task than for text detection, 
+we use `threshold` function to increase contrast and better separate text from the background. Then we enlarge text blocks with `dilate` and transform them into rectangle shapes.
 ```python
 new_image = image.copy()
 _, new_image = cv2.threshold(new_image, 0, 255, cv2.THRESH_BINARY_INV)
 kernel = np.ones((15, 15),np.uint8)
 new_image = cv2.dilate(new_image, kernel, iterations = 2)
 ```
+
+After that pre-processing we can use OpenCV `findContours` to locate those blocks and as output we get array of contours coordinates.
+```python
+cntrs = cv2.findContours(proc_image.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+cntrs = imutils.grab_contours(cntrs)
+```
+
+Now, we need to tweak a pytesseract call a bit, in order to better deal with single word recognition by setting `psm` parameter to `6`, so that Tesseract will handle the input only as a single word:
+```python
+text = pytesseract.image_to_string(image, config='--psm 6')
+```
+
 
 ## Multiprocessing
 The video which contains 68 unique frames with 1 thread takes 236.84 seconds to process. Using some straight-forward multiprocessing by separating frames between CPU, result with 10 parallel threads gives 57.95 seconds for the same processing.

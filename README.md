@@ -13,17 +13,41 @@ Field Test Mode on the iPhones provides infromation about radio channel conditio
 ## Outcome
 As a result I want to get a CSV file with a time trace of a received signal strength.
 
+![Frame example](screenshots/table.png)
+
 ## Input description
 Input for the processing is a video file which as then transformed to the unique image sequence. Since the frame rate is higher than 1 frame per second and the data changes even less frequently we need to extract only frames with new information on them.
 
-A frame example:
+A frame sample:
 
 ![Frame example](screenshots/frame0.png)
 
-## Project structure
-The main script is located in `main.py` file.
+## Dependencies
+* Python 3
+* [Google Tesseract](https://github.com/tesseract-ocr/tesseract)
+* [pytesseract](https://pypi.org/project/pytesseract/)
+* [opencv-python](https://pypi.org/project/opencv-python/)
+* [numpy](https://pypi.org/project/numpy/) and [pandas](https://pypi.org/project/pandas/) 
+* [imutils](https://pypi.org/project/imutils/)
+* [dateutil](https://pypi.org/project/python-dateutil/)
+* [scikit-image](https://scikit-image.org)
 
-The script file `consts.py` contains constants, such as types, folder names
+## Usage
+TODO: Usage description
+
+## Project structure
+The main script is located in `cli.py` file. Us `python3 cli.py -h` to explore all possible options.
+
+The script file `consts.py` contains constants, such as types, folder names. 
+
+`recognizer.py` is an implementation of text recognition procedure, along with keys, values detection and correction.
+
+`text_helper.py` contains functions to validate and correct strings.
+
+`cv_helper.py` is a set of methods related to OpenCV, e.g. to extract video frames or pre-process images.
+
+## Constants explanation
+
 ```python
 CHECK_NONE = 0
 CHECK_REPLACE = 1
@@ -55,6 +79,7 @@ Another helpful dictionary is `EXPECTED_KEYS` is a list which we describe expect
 In this case we describe that value `phy_cell_id` should be an integer and correction function will be Levenshtein distance calculation. The `rsrp0` value will be corrected by replacing symbols using `REPLACE_RULES` dictionary.
 
 ## Get video frames
+TODO: Extract frames description
 
 ## Text recognition
 Google provides a very powerful and helpful library: Tesseract. Using pytesseract the text on image can be recognized with a single line of code:
@@ -65,7 +90,7 @@ text = pytesseract.image_to_string(image)
 So, we can just feed in the whole image to the Tesseract and get the text. Well, yes and no.
 
 Here is the result:
-
+TODO: Image with recognised text here
 
 ## Text detection
 In order to improve accuracy of Tesseract we need to extract single words and process them.
@@ -81,12 +106,9 @@ EAST frozen model with Tensorflow also gives a result which can be used with som
 ![EAST Text Detection example](screenshots/east.png) 
 ![EAST Text Detection example 2](screenshots/east1.png)
 
-However, I have later realised that using this libraries for this case is too overwhelming and processing takes some time. While doing experiments with image pre-processing, I have noticed that text can be transofrmed into filled rectangles:
+However, I have later realised that using this libraries for this case is too overwhelming and processing takes some time. While doing experiments with image pre-processing, I have noticed that text can be transofrmed into filled rectangles. On the other hand it makes easier to distinguish it from the background and applying OpenCV we can detect now contours of those areas.
 
 ![Contours preprocessing](screenshots/preprocessing.png) 
-
-On the other hand it makes easier to distinguish it from the background and applying OpenCV we can detect now contours of those areas.
-
 ![Contours result](screenshots/contours.png) 
 
 Pre-processing of the original image affects the result a lot, but preparing image for contour detection is much easier task than for text detection:
@@ -99,15 +121,6 @@ new_image = cv2.dilate(new_image, kernel, iterations = 2)
 
 ## Multiprocessing
 The video which contains 68 unique frames with 1 thread takes 236.84 seconds to process. Using some straight-forward multiprocessing by separating frames between CPU, result with 10 parallel threads gives 57.95 seconds for the same processing.
-
-## Dependencies
-* [Google Tesseract](https://github.com/tesseract-ocr/tesseract)
-* [pytesseract](https://pypi.org/project/pytesseract/)
-* [opencv-python](https://pypi.org/project/opencv-python/)
-* [numpy](https://pypi.org/project/numpy/) and [pandas](https://pypi.org/project/pandas/) 
-* [imutils](https://pypi.org/project/imutils/)
-* [dateutil](https://pypi.org/project/python-dateutil/)
-* [scikit-image](https://scikit-image.org)
 
 ## Authorship and license
 Igor Kim

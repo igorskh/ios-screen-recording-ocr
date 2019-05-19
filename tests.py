@@ -44,17 +44,18 @@ class TestTextHelpersMethods(unittest.TestCase):
 
         REPLACE_RULES = {
             "1,-1": ["i", "[", "]", "l", "7", "?", "t"],
-            "1,0": ["i", "[", "]", "l", "7", "?", "t"],
+            "0,-1": ["o"],
+            "q,-2": ["g"],
+            "0,": ["0o", "o0", "00", "oo"],
             "q,": ["qg","qq","gg","gq"]
         }
         test_cases = [
-            ("testi", "1est1"),
-            ("test?", "1est1"),
-            ("?test", "1tes1"),
-            ("]tesn", "1tesn"),
-            ("qg", "q"),
-            ("qgqg", "q"),
-            ("qgqgqg", "qq")
+            ("sinri", "sinr1"),
+            ("sInrl", "sinr1"),
+            ("rsrqo", "rsrq0"),
+            ("rSrqO", "rsrq0"),
+            ("rsrg0", "rsrq0"),
+            ("rsrgg0", "rsrq0")
         ]
         for t in test_cases:
             res = text_helpers.check_replace(t[0], REPLACE_RULES)

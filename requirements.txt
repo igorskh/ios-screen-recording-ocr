@@ -1,6 +1,6 @@
 numpy==1.16.3
 pandas==0.24.1
-opencv-python==4.1.0.25
+opencv-python==4.1.1.26
 imutils==0.5.2
 python-dateutil==2.7.3
 pytesseract==0.2.6
